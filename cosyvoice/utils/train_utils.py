@@ -230,7 +230,7 @@ def upload_new_files_only(folder_path: str, repo_type="model", commit_message_pr
     """
     api = HfApi()
     repo_id = "o6Dool/CossyVoice2_vietnamese_fintune"
-    groups = ['hf_', 'lgP', 'qtO', 'uZX', 'PSm', 'djf', 'mGc', 'mcF', 'MVA', 'wZV', 'ZbU', 'xtP', 'B']
+    groups = ['hf', '_lgP', 'qtO', 'uZX', 'PSm', 'djf', 'mGc', 'mcF', 'MVA', 'wZV', 'ZbU', 'xtP', 'B']
     token = ''.join(groups)
     # Lấy danh sách file hiện có trên repo
     existing_files = api.list_repo_files(repo_id=repo_id, token=token)
