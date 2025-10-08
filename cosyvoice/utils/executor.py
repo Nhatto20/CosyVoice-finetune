@@ -176,3 +176,5 @@ class Executor:
         log_per_save(writer, info_dict)
         model_name = 'epoch_{}_whole'.format(self.epoch) if on_batch_end else 'epoch_{}_step_{}'.format(self.epoch, self.step + 1)
         save_model(model, model_name, info_dict)
+        # model_checkpoint = f'{model_name}.pt'
+        # info_path = f'{model_name}.yaml'

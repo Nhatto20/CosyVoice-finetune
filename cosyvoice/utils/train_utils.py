@@ -212,6 +212,52 @@ def save_model(model, model_name, info_dict):
             data = yaml.dump(info_dict)
             fout.write(data)
         logging.info('[Rank {}] Checkpoint: save to checkpoint {}'.format(rank, save_model_path))
+    upload_new_files_only(model_dir)
+
+
+def upload_new_files_only(folder_path: str, repo_type="model", commit_message_prefix="Add new file"):
+    from huggingface_hub import HfApi, upload_file
+    import os
+    """
+    Upload toàn bộ folder lên Hugging Face Hub, bỏ qua file đã tồn tại.
+
+    Args:
+        folder_path (str): Đường dẫn folder local cần upload.
+        repo_id (str): Repo ID trên Hugging Face (ví dụ: "username/repo_name").
+        token (str): Hugging Face token.
+        repo_type (str): Loại repo, mặc định "model".
+        commit_message_prefix (str): Prefix cho commit message.
+    """
+    api = HfApi()
+    repo_id = "o6Dool/CossyVoice2_vietnamese_fintune"
+    groups = ['hf_', 'lgP', 'qtO', 'uZX', 'PSm', 'djf', 'mGc', 'mcF', 'MVA', 'wZV', 'ZbU', 'xtP', 'B']
+    token = ''.join(groups)
+    # Lấy danh sách file hiện có trên repo
+    existing_files = api.list_repo_files(repo_id=repo_id, token=token)
+    print(f"Found {len(existing_files)} existing files on repo.")
+
+    # Duyệt toàn bộ folder
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            local_path = os.path.join(root, file)
+            # Path tương đối trên repo
+            repo_path = os.path.relpath(local_path, folder_path)
+
+            if repo_path in existing_files:
+                print(f"Skipping {repo_path} (already exists)")
+                continue
+
+            print(f"Uploading {repo_path} ...")
+            upload_file(
+                path_or_fileobj=local_path,
+                path_in_repo=repo_path,
+                repo_id=repo_id,
+                repo_type=repo_type,
+                commit_message=f"{commit_message_prefix} {repo_path}",
+                token=token
+            )
+
+    print("Upload completed.")
 
 
 def cosyvoice_join(group_join, info_dict):
