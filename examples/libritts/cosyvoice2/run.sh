@@ -117,6 +117,6 @@ mkdir -p $new_pretrained_model_dir
 
 if [ ${stage} -le 7 ] && [ ${stop_stage} -ge 7 ]; then
   echo "Export your model for inference speedup. Remember copy your llm or flow model to model_dir"
-  python3 cosyvoice/bin/export_jit.py --model_dir $new_pretrained_model_dir
-  python3 cosyvoice/bin/export_onnx.py --model_dir $new_pretrained_model_dir
+  python3 cosyvoice/bin/export_jit.py --model_dir $pretrained_model_dir
+  python3 cosyvoice/bin/export_onnx.py --model_dir $pretrained_model_dir
 fi
