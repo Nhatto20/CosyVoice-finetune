@@ -58,7 +58,7 @@ fi
 
 # train llm
 #export CUDA_VISIBLE_DEVICES="0,1,2,3"
-export CUDA_VISIBLE_DEVICES="0"
+export CUDA_VISIBLE_DEVICES="0,1"
 num_gpus=$(echo $CUDA_VISIBLE_DEVICES | awk -F "," '{print NF}')
 job_id=1986
 dist_backend="nccl"
@@ -113,7 +113,7 @@ if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then
   done
 fi
 
-mkdir -p $new_pretrained_model_dir
+#mkdir -p $new_pretrained_model_dir
 
 if [ ${stage} -le 7 ] && [ ${stop_stage} -ge 7 ]; then
   echo "Export your model for inference speedup. Remember copy your llm or flow model to model_dir"
