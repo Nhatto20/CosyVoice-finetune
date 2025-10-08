@@ -179,6 +179,7 @@ def main():
 
     # Start training loop
     for epoch in range(start_epoch + 1, info_dict['max_epoch']):
+        print(f"epoch : {epoch}/{info_dict['max_epoch']}")
         executor.epoch = epoch
         train_dataset.set_epoch(epoch)
         dist.barrier()
