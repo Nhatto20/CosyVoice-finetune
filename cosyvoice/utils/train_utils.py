@@ -212,7 +212,13 @@ def save_model(model, model_name, info_dict):
             data = yaml.dump(info_dict)
             fout.write(data)
         logging.info('[Rank {}] Checkpoint: save to checkpoint {}'.format(rank, save_model_path))
-    upload_new_files_only(model_dir)
+        # UPLOAD CHỈ ĐƯỢC GỌI BỞI RANK 0
+        try:
+            upload_new_files_only(model_dir)
+        except Exception as e:
+            logging.error(f'[Rank {rank}] Upload failed: {e}')
+            # KHÔNG XÓA FILE NẾU UPLOAD THẤT BẠI
+            return
     # Chỉ xóa file model sau khi upload hoàn tất
     if rank == 0:
         try:
