@@ -156,6 +156,7 @@ def main():
     info_dict = deepcopy(configs['train_conf'])
     info_dict['step'] = start_step
     info_dict['epoch'] = start_epoch
+    info_dict['training_model'] = args.model
     save_model(model, 'init', info_dict)
 
     # DPO related

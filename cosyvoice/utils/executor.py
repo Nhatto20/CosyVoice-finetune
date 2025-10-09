@@ -175,6 +175,7 @@ class Executor:
         info_dict['loss_dict'] = total_loss_dict
         log_per_save(writer, info_dict)
         model_name = 'epoch_{}_whole'.format(self.epoch) if on_batch_end else 'epoch_{}_step_{}'.format(self.epoch, self.step + 1)
+        model_name = info_dict['training_model'] + model_name
         save_model(model, model_name, info_dict)
         # model_checkpoint = f'{model_name}.pt'
         # info_path = f'{model_name}.yaml'
