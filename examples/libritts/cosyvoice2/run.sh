@@ -4,8 +4,8 @@ source ./path.sh || exit 1
 #. ./path.sh || exit 1;
 
 
-stage=4
-stop_stage=7
+stage=5
+stop_stage=5
 
 data_dir=mnt/c/Users/japan/datasets/Speech
 pretrained_model_dir=../../../pretrained_models/CosyVoice2-0.5B
