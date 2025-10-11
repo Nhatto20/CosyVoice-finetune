@@ -76,7 +76,8 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
   # cat data/viVoice-test/parquet/data.list > data/dev.data.list
   
   # NOTE will update llm/hift training later
-  for model in llm flow hifigan; do
+  #for model in llm flow hifigan; do
+  for model in hifigan; do
     torchrun --nnodes=1 --nproc_per_node=$num_gpus \
         --rdzv_id=$job_id --rdzv_backend="c10d" --rdzv_endpoint="localhost:1234" \
       cosyvoice/bin/train.py \
