@@ -4,12 +4,12 @@ source ./path.sh || exit 1
 #. ./path.sh || exit 1;
 
 
-stage=4
-stop_stage=7
+stage=6
+stop_stage=6
 
 data_dir=mnt/c/Users/japan/datasets/Speech
-pretrained_model_dir=../../../pretrained_models/CosyVoice2-0.5B
-new_pretrained_model_dir=../../../new_pretrained_models/CosyVoice2-0.5B
+pretrained_model_dir=mnt/c/Users/japan/datasets/pretrained_models
+#new_pretrained_model_dir=../../../new_pretrained_models/CosyVoice2-0.5B
 # data_url=www.openslr.org/resources/60
 # data_dir=/mnt/lyuxiang.lx/data/tts/openslr/libritts
 # pretrained_model_dir=../../../pretrained_models/CosyVoice2-0.5B
