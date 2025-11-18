@@ -4,11 +4,11 @@ source ./path.sh || exit 1
 #. ./path.sh || exit 1;
 
 
-stage=6
-stop_stage=6
+stage=7
+stop_stage=7
 
 data_dir=mnt/c/Users/japan/datasets/Speech
-pretrained_model_dir=mnt/c/Users/japan/datasets/pretrained_models
+pretrained_model_dir=/mnt/c/Users/japan/datasets/pretrained_models/CosyVoice2-0.5B
 #new_pretrained_model_dir=../../../new_pretrained_models/CosyVoice2-0.5B
 # data_url=www.openslr.org/resources/60
 # data_dir=/mnt/lyuxiang.lx/data/tts/openslr/libritts
@@ -102,7 +102,8 @@ fi
 # average model
 average_num=5
 if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then
-  for model in llm flow hifigan; do
+  #for model in llm flow hifigan; do
+  for model in llm flow; do
     decode_checkpoint=`pwd`/exp/cosyvoice/$model/$train_engine/${model}.pt
     echo "do model average and final checkpoint is $decode_checkpoint"
     python3 cosyvoice/bin/average_model.py \
