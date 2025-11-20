@@ -10,7 +10,9 @@ logger = logging.getLogger()
 
 def main():
     #wavs = list(glob.glob('{}/*wav'.format(args.src_dir)))
+    #print(args.src_dir)
     wavs = list(glob.glob(f"{args.src_dir}/*.wav"))
+    #print(wavs)
     utt2wav, utt2text, utt2spk, spk2utt = {}, {}, {}, {}
     for wav in tqdm(wavs):
         txt = wav.replace('.wav', '.normalized.txt')
