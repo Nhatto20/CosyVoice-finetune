@@ -4,7 +4,7 @@ source ./path.sh || exit 1
 #. ./path.sh || exit 1;
 
 
-stage=1
+stage=3
 stop_stage=3
 
 data_dir=/mnt/c/Users/japan/datasets/Speech/JVS
@@ -52,7 +52,7 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
   for x in train test; do
     mkdir -p data/$x/parquet
     python3 tools/make_parquet_list.py --num_utts_per_parquet 1000 \
-      --num_processes 10 \
+      --num_processes 12 \
       --src_dir data/$x \
       --des_dir data/$x/parquet
   done
@@ -60,7 +60,7 @@ fi
 
 # train llm
 #export CUDA_VISIBLE_DEVICES="0,1,2,3"
-export CUDA_VISIBLE_DEVICES="0,1"
+export CUDA_VISIBLE_DEVICES="0"
 num_gpus=$(echo $CUDA_VISIBLE_DEVICES | awk -F "," '{print NF}')
 job_id=1986
 dist_backend="nccl"
@@ -78,8 +78,8 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
   # cat data/viVoice-test/parquet/data.list > data/dev.data.list
   
   # NOTE will update llm/hift training later
-  #for model in llm flow hifigan; do
-  for model in hifigan; do
+  for model in llm flow hifigan; do
+  #for model in hifigan; do
     torchrun --nnodes=1 --nproc_per_node=$num_gpus \
         --rdzv_id=$job_id --rdzv_backend="c10d" --rdzv_endpoint="localhost:1234" \
       cosyvoice/bin/train.py \

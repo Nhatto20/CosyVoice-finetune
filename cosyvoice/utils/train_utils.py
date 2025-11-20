@@ -214,23 +214,24 @@ def save_model(model, model_name, info_dict):
         logging.info('[Rank {}] Checkpoint: save to checkpoint {}'.format(rank, save_model_path))
         # UPLOAD CHỈ ĐƯỢC GỌI BỞI RANK 0
         try:
-            upload_new_files_only(model_dir)
+            #upload_new_files_only(model_dir)
+            print(f"Saved : {model_dir}")
         except Exception as e:
             logging.error(f'[Rank {rank}] Upload failed: {e}')
             # KHÔNG XÓA FILE NẾU UPLOAD THẤT BẠI
             return
     # Chỉ xóa file model sau khi upload hoàn tất
-    if rank == 0:
-        try:
-            # Chỉ xóa file model, giữ lại file info
-            if os.path.exists(save_model_path):
-                os.remove(save_model_path)
-                logging.info(f'[Rank {rank}] Deleted model file: {save_model_path}')
-            else:
-                logging.warning(f'[Rank {rank}] Model file not found: {save_model_path}')
+    # if rank == 0:
+    #     try:
+    #         # Chỉ xóa file model, giữ lại file info
+    #         if os.path.exists(save_model_path):
+    #             os.remove(save_model_path)
+    #             logging.info(f'[Rank {rank}] Deleted model file: {save_model_path}')
+    #         else:
+    #             logging.warning(f'[Rank {rank}] Model file not found: {save_model_path}')
                 
-        except Exception as e:
-            logging.error(f'[Rank {rank}] Error deleting model file: {e}')
+    #     except Exception as e:
+    #         logging.error(f'[Rank {rank}] Error deleting model file: {e}')
 
 
 def upload_new_files_only(folder_path: str, repo_type="model", commit_message_prefix="Add new file"):
