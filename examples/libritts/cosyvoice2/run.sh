@@ -8,7 +8,7 @@ stage=5
 stop_stage=7
 
 data_dir=/mnt/c/Users/japan/datasets/Speech/JVS
-pretrained_model_dir=../../../pretrained_models/JP-CosyVoice2-0.5B
+pretrained_model_dir=../../../pretrained_models/CosyVoice2-0.5B
 #pretrained_model_dir=mnt/c/Users/japan/datasets/pretrained_models/JP-CosyVoice2-0.5B
 
 #new_pretrained_model_dir=../../../new_pretrained_models/CosyVoice2-0.5B
