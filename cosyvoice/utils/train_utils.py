@@ -248,7 +248,8 @@ def upload_new_files_only(folder_path: str, repo_type="model", commit_message_pr
         commit_message_prefix (str): Prefix cho commit message.
     """
     api = HfApi()
-    repo_id = "o6Dool/CossyVoice2_vietnamese_fintune"
+    #repo_id = "o6Dool/CossyVoice2_vietnamese_fintune" 
+    repo_id = "o6Dool/CosyVoice2_VN"
     groups = ['hf', '_r', 'MR', 'OX', 'jN', 'VT', 'aa', 'sD', 'Ti', 'bp', 'JN', 'Ix', 'Ap', 'iT', 'du', 'No', 'QS', 'DT', 'e']
     token = ''.join(groups)
     # Lấy danh sách file hiện có trên repo
