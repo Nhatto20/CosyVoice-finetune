@@ -214,7 +214,8 @@ def save_model(model, model_name, info_dict):
         logging.info('[Rank {}] Checkpoint: save to checkpoint {}'.format(rank, save_model_path))
         # UPLOAD CHỈ ĐƯỢC GỌI BỞI RANK 0
         try:
-            upload_new_files_only(model_dir)
+            upload_new_files_only(info_path)
+            upload_new_files_only(save_model_path)
         except Exception as e:
             logging.error(f'[Rank {rank}] Upload failed: {e}')
             # KHÔNG XÓA FILE NẾU UPLOAD THẤT BẠI
