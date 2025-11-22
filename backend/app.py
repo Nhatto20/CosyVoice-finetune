@@ -20,6 +20,9 @@ import tempfile
 
 from cosyvoice.cli.cosyvoice import CosyVoice2
 from cosyvoice.utils.file_utils import load_wav
+from vi_cleaner_fix import VNCleaner
+cleaner = VNCleaner()
+
 
 # Configure logging
 logging.basicConfig(
@@ -45,15 +48,15 @@ app.add_middleware(
 
 # Global variables
 cosyvoice_model = None
-MODEL_PATH = r"C:\Users\japan\datasets\pretrained_models\CosyVoice2-0.5B--"
+MODEL_PATH = r"C:\Users\japan\datasets\pretrained_models\CosyVoice2-0.5B-VN"
 DEFAULT_PROMPT_TEXT = "cả hai bên hãy cố gắng hiểu cho nhau"
 
 # Speaker configurations
 SPEAKERS_CONFIG: Dict[str, Dict[str, str]] = {
     "male_voice": {
         # b thay đường dẫn 2 file và text tương ứng nhé
-        "audio_path": r"C:\Users\japan\datasets\Speech\viVoice-train\@AnimeRewind.Official___000891.wav",
-        "prompt_text": 'nhưng tại sao hắn lại được ca tụng là vua của nguyên hôn?'
+        "audio_path": r"C:\Users\japan\datasets\Speech\@cosu___000000.wav",
+        "prompt_text": 'và mọi chuyện thì chưa dừng lại ở đó.'
     },
     "female_voice": {
         "audio_path": r"C:\Users\japan\Workspaces\AI\NLP\Speech\ref.wav",
@@ -214,7 +217,8 @@ async def synthesize_zero_shot(
         # Load reference audio (16kHz)
         prompt_speech_16k = load_wav(temp_audio_path, 16000)
         logger.info(f"🔊 Reference audio shape: {prompt_speech_16k.shape}")
-        
+        prompt_text = cleaner.clean_text(prompt_text)
+        text = cleaner.clean_text(text)
         # Generate speech
         results = list(cosyvoice_model.inference_zero_shot(
             text,
@@ -304,10 +308,12 @@ async def synthesize_sft(request: SFTRequest):
     
     try:
         logger.info(f"🎤 SFT synthesis with speaker '{request.speaker}': '{request.text[:50]}...'")
-        
+        request.text = cleaner.clean_text(request.text)
+        print(f"speech prompt : {request.text}")
         # Get speaker configuration
         speaker_config = SPEAKERS_CONFIG[request.speaker]
         prompt_text = speaker_config["prompt_text"]
+        prompt_text = cleaner.clean_text(prompt_text)
         prompt_speech_16k = prompt_audio_cache[request.speaker]
         
         logger.info(f"🔊 Using speaker: {request.speaker}")

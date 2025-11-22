@@ -5,7 +5,7 @@ source ./path.sh || exit 1
 
 
 stage=5
-stop_stage=7
+stop_stage=5
 
 data_dir=/mnt/c/Users/japan/datasets/Speech/JVS
 pretrained_model_dir=../../../pretrained_models/CosyVoice2-0.5B
@@ -77,6 +77,9 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
   # cat data/viVoice-train/parquet/data.list > data/train.data.list
   # cat data/viVoice-test/parquet/data.list > data/dev.data.list
   
+  # cat data/train/parquet/data.list > data/train.data.list
+  # cat data/test/parquet/data.list > data/dev.data.list
+
   # NOTE will update llm/hift training later
   for model in llm flow; do
   #for model in hifigan; do

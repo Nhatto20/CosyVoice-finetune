@@ -214,7 +214,7 @@ def save_model(model, model_name, info_dict):
         logging.info('[Rank {}] Checkpoint: save to checkpoint {}'.format(rank, save_model_path))
         # UPLOAD CHỈ ĐƯỢC GỌI BỞI RANK 0
         try:
-            #upload_new_files_only(model_dir)
+            upload_new_files_only(model_dir)
             print(f"Saved : {model_dir}")
         except Exception as e:
             logging.error(f'[Rank {rank}] Upload failed: {e}')
@@ -248,7 +248,7 @@ def upload_new_files_only(folder_path: str, repo_type="model", commit_message_pr
         commit_message_prefix (str): Prefix cho commit message.
     """
     api = HfApi()
-    repo_id = "o6Dool/CossyVoice2_vietnamese_fintune"
+    repo_id = "o6Dool/JP_CosyVoice2_finetune"
     groups = ['hf', '_r', 'MR', 'OX', 'jN', 'VT', 'aa', 'sD', 'Ti', 'bp', 'JN', 'Ix', 'Ap', 'iT', 'du', 'No', 'QS', 'DT', 'e']
     token = ''.join(groups)
     # Lấy danh sách file hiện có trên repo
