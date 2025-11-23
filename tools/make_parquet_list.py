@@ -24,38 +24,50 @@ import torch
 
 
 def job(utt_list, parquet_file, utt2parquet_file, spk2parquet_file):
-    start_time = time.time()
-    data_list = []
-    for utt in tqdm(utt_list):
-        data = open(utt2wav[utt], 'rb').read()
-        data_list.append(data)
-    wav_list = [utt2wav[utt] for utt in utt_list]
-    text_list = [utt2text[utt] for utt in utt_list]
-    spk_list = [utt2spk[utt] for utt in utt_list]
-    uttembedding_list = [utt2embedding[utt] for utt in utt_list]
-    spkembedding_list = [spk2embedding[utt2spk[utt]] for utt in utt_list]
-    speech_token_list = [utt2speech_token.get(utt, []) for utt in utt_list]
-    if args.dpo:
-        reject_speech_token_list = [utt2reject_speech_token[utt] for utt in utt_list]
+    
+    print(f"[START] pid={os.getpid()} job starting | {utt2parquet_file}")
+    try:
+        start_time = time.time()
+        data_list = []
+        #for utt in tqdm(utt_list):
+        for utt in utt_list:
+            data = open(utt2wav[utt], 'rb').read()
+            data_list.append(data)
+        wav_list = [utt2wav[utt] for utt in utt_list]
+        text_list = [utt2text[utt] for utt in utt_list]
+        spk_list = [utt2spk[utt] for utt in utt_list]
+        uttembedding_list = [utt2embedding[utt] for utt in utt_list]
+        spkembedding_list = [spk2embedding[utt2spk[utt]] for utt in utt_list]
+        speech_token_list = [utt2speech_token.get(utt, []) for utt in utt_list]
+        if args.dpo:
+            reject_speech_token_list = [utt2reject_speech_token[utt] for utt in utt_list]
 
-    # 保存到parquet,utt2parquet_file,spk2parquet_file
-    df = pd.DataFrame()
-    df['utt'] = utt_list
-    df['wav'] = wav_list
-    df['audio_data'] = data_list
-    df['text'] = text_list
-    df['spk'] = spk_list
-    df['utt_embedding'] = uttembedding_list
-    df['spk_embedding'] = spkembedding_list
-    df['speech_token'] = speech_token_list
-    if args.dpo:
-        df['reject_speech_token'] = reject_speech_token_list
-    df.to_parquet(parquet_file)
-    with open(utt2parquet_file, 'w') as f:
-        json.dump({k: parquet_file for k in utt_list}, f, ensure_ascii=False, indent=2)
-    with open(spk2parquet_file, 'w') as f:
-        json.dump({k: parquet_file for k in list(set(spk_list))}, f, ensure_ascii=False, indent=2)
-    logging.info('spend time {}'.format(time.time() - start_time))
+        # 保存到parquet,utt2parquet_file,spk2parquet_file
+        df = pd.DataFrame()
+        df['utt'] = utt_list
+        df['wav'] = wav_list
+        df['audio_data'] = data_list
+        df['text'] = text_list
+        df['spk'] = spk_list
+        df['utt_embedding'] = uttembedding_list
+        df['spk_embedding'] = spkembedding_list
+        df['speech_token'] = speech_token_list
+        if args.dpo:
+            df['reject_speech_token'] = reject_speech_token_list
+        print(f"{utt2parquet_file} writing parquet")
+        df.to_parquet(parquet_file)
+        print(f"{utt2parquet_file} writing json utt")
+        with open(utt2parquet_file, 'w') as f:
+            json.dump({k: parquet_file for k in utt_list}, f, ensure_ascii=False, indent=2)
+        print(f"{spk2parquet_file} writing json spk")
+        with open(spk2parquet_file, 'w') as f:
+            json.dump({k: parquet_file for k in list(set(spk_list))}, f, ensure_ascii=False, indent=2)
+        logging.info('spend time {}'.format(time.time() - start_time))
+    except Exception:
+        print(f"[ERROR] pid={os.getpid()} | {utt2parquet_file}")
+    finally:
+        print(f"[END] pid={os.getpid()} job finished | {utt2parquet_file}")
+        #print(f"Done : {utt2parquet_file}, {spk2parquet_file}")
 
 
 if __name__ == "__main__":
@@ -99,6 +111,7 @@ if __name__ == "__main__":
     utts = list(utt2wav.keys())
 
     # Using process pool to speedup
+    results = []
     pool = multiprocessing.Pool(processes=args.num_processes)
     parquet_list, utt2parquet_list, spk2parquet_list = [], [], []
     for i, j in enumerate(range(0, len(utts), args.num_utts_per_parquet)):
@@ -108,10 +121,14 @@ if __name__ == "__main__":
         parquet_list.append(parquet_file)
         utt2parquet_list.append(utt2parquet_file)
         spk2parquet_list.append(spk2parquet_file)
-        pool.apply_async(job, (utts[j: j + args.num_utts_per_parquet], parquet_file, utt2parquet_file, spk2parquet_file))
+        r = pool.apply_async(job, (utts[j: j + args.num_utts_per_parquet], parquet_file, utt2parquet_file, spk2parquet_file))
+        results.append(r)
+    print("now closing multiprocessing")
     pool.close()
+    for r in results:
+        print(r.get())
     pool.join()
-
+    print('ok now, all good')
     with open('{}/data.list'.format(args.des_dir), 'w', encoding='utf8') as f1, \
             open('{}/utt2data.list'.format(args.des_dir), 'w', encoding='utf8') as f2, \
             open('{}/spk2data.list'.format(args.des_dir), 'w', encoding='utf8') as f3:
