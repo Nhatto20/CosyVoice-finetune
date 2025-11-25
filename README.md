@@ -51,15 +51,14 @@ Hỗ trợ nghe/lưu file .wav.
 
 Hướng dẫn cài đặt:
 
+git clone:
+
 ``` sh
 !git clone https://github.com/Nhatto20/CosyVoice-finetune.git
 %cd CosyVoice-finetune
 !git submodule update --init --recursive
-!pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com
 ```
 
-Weight: https://huggingface.co/o6Dool/CosyVoice2-VN-Finetune
-Tải về và đặt folder "CosyVoice2-0.5B-VN" trong folder pretrained_models
 
 ``` sh
 mkdir -p pretrained_models
@@ -68,4 +67,27 @@ cd pretrained_models
 
 git lfs install
 git clone https://huggingface.co/o6Dool/CosyVoice2-VN-Finetune CosyVoice2-0.5B-VN
+```
+
+tạo conda env:
+
+``` sh
+conda create -n cosyvoice -y python=3.10
+conda activate cosyvoice
+!pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com
+```
+
+Weight: https://huggingface.co/o6Dool/CosyVoice2-VN-Finetune
+Tải về và đặt folder "CosyVoice2-0.5B-VN" trong folder pretrained_models
+
+
+để chạy ứng dụng web:
+
+``` sh
+python .\backend\app.py
+```
+
+``` sh
+cd cd .\frontend
+npm start
 ```
