@@ -4,11 +4,13 @@ source ./path.sh || exit 1
 #. ./path.sh || exit 1;
 
 
-stage=7
-stop_stage=7
+stage=5
+stop_stage=5
 
-data_dir=mnt/c/Users/japan/datasets/Speech
-pretrained_model_dir=/mnt/c/Users/japan/datasets/pretrained_models/CosyVoice2-0.5B
+data_dir=/mnt/c/Users/japan/datasets/Speech/JVS
+pretrained_model_dir=../../../pretrained_models/CosyVoice2-0.5B
+#pretrained_model_dir=mnt/c/Users/japan/datasets/pretrained_models/JP-CosyVoice2-0.5B
+
 #new_pretrained_model_dir=../../../new_pretrained_models/CosyVoice2-0.5B
 # data_url=www.openslr.org/resources/60
 # data_dir=/mnt/lyuxiang.lx/data/tts/openslr/libritts
@@ -23,7 +25,7 @@ pretrained_model_dir=/mnt/c/Users/japan/datasets/pretrained_models/CosyVoice2-0.
 
 if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
   echo "Data preparation, prepare wav.scp/text/utt2spk/spk2utt"
-  for x in viVoice-train viVoice-test; do
+  for x in train test; do
     mkdir -p data/$x
     python3 local/prepare_data.py --src_dir $data_dir/$x --des_dir data/$x
   done
@@ -31,7 +33,7 @@ fi
 
 if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
   echo "Extract campplus speaker embedding, you will get spk2embedding.pt and utt2embedding.pt in data/$x dir"
-  for x in viVoice-train viVoice-test; do
+  for x in train test; do
     python3 tools/extract_embedding.py --dir data/$x \
       --onnx_path $pretrained_model_dir/campplus.onnx
   done
@@ -39,7 +41,7 @@ fi
 
 if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
   echo "Extract discrete speech token, you will get utt2speech_token.pt in data/$x dir"
-  for x in viVoice-train viVoice-test; do
+  for x in train test; do
     python3 tools/extract_speech_token.py --dir data/$x \
       --onnx_path $pretrained_model_dir/speech_tokenizer_v2.onnx
   done
@@ -47,10 +49,10 @@ fi
 
 if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
   echo "Prepare required parquet format data, you should have prepared wav.scp/text/utt2spk/spk2utt/utt2embedding.pt/spk2embedding.pt/utt2speech_token.pt"
-  for x in viVoice-train viVoice-test; do
+  for x in train test; do
     mkdir -p data/$x/parquet
     python3 tools/make_parquet_list.py --num_utts_per_parquet 1000 \
-      --num_processes 10 \
+      --num_processes 4 \
       --src_dir data/$x \
       --des_dir data/$x/parquet
   done
@@ -58,7 +60,7 @@ fi
 
 # train llm
 #export CUDA_VISIBLE_DEVICES="0,1,2,3"
-export CUDA_VISIBLE_DEVICES="0,1"
+export CUDA_VISIBLE_DEVICES="0"
 num_gpus=$(echo $CUDA_VISIBLE_DEVICES | awk -F "," '{print NF}')
 job_id=1986
 dist_backend="nccl"
@@ -75,8 +77,12 @@ if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
   cat data/viVoice-train/parquet/data.list > data/train.data.list
   cat data/viVoice-test/parquet/data.list > data/dev.data.list
   
+  # cat data/train/parquet/data.list > data/train.data.list
+  # cat data/test/parquet/data.list > data/dev.data.list
+
   # NOTE will update llm/hift training later
-  for model in llm flow hifigan; do
+  for model in llm flow; do
+  #for model in hifigan; do
     torchrun --nnodes=1 --nproc_per_node=$num_gpus \
         --rdzv_id=$job_id --rdzv_backend="c10d" --rdzv_endpoint="localhost:1234" \
       cosyvoice/bin/train.py \

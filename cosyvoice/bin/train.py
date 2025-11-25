@@ -156,7 +156,9 @@ def main():
     info_dict = deepcopy(configs['train_conf'])
     info_dict['step'] = start_step
     info_dict['epoch'] = start_epoch
-    save_model(model, 'init', info_dict)
+    info_dict['training_model'] = args.model
+    print(f"currently on training { args.model}")
+    save_model(model, f'{args.model}_init', info_dict)
 
     # DPO related
     if args.dpo is True:

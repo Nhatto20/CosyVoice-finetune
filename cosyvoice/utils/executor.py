@@ -83,7 +83,8 @@ class Executor:
                 if (batch_idx + 1) % info_dict["accum_grad"] == 0:
                     self.step += 1
         dist.barrier()
-        self.cv(model, cv_data_loader, writer, info_dict, on_batch_end=True)
+        if self.epoch % info_dict['save_per_epoch'] == 0 or self.epoch == info_dict['max_epoch']:
+            self.cv(model, cv_data_loader, writer, info_dict, on_batch_end=True)
 
     def train_one_epoc_gan(self, model, optimizer, scheduler, optimizer_d, scheduler_d, train_data_loader, cv_data_loader,
                            writer, info_dict, scaler, group_join):
@@ -141,7 +142,8 @@ class Executor:
                 if (batch_idx + 1) % info_dict["accum_grad"] == 0:
                     self.step += 1
         dist.barrier()
-        self.cv(model, cv_data_loader, writer, info_dict, on_batch_end=True)
+        if self.epoch % info_dict['save_per_epoch'] == 0 or self.epoch == info_dict['max_epoch']:
+            self.cv(model, cv_data_loader, writer, info_dict, on_batch_end=True)
 
     @torch.inference_mode()
     def cv(self, model, cv_data_loader, writer, info_dict, on_batch_end=True):
@@ -173,4 +175,7 @@ class Executor:
         info_dict['loss_dict'] = total_loss_dict
         log_per_save(writer, info_dict)
         model_name = 'epoch_{}_whole'.format(self.epoch) if on_batch_end else 'epoch_{}_step_{}'.format(self.epoch, self.step + 1)
+        model_name = info_dict['training_model'] + "_" + model_name
         save_model(model, model_name, info_dict)
+        # model_checkpoint = f'{model_name}.pt'
+        # info_path = f'{model_name}.yaml'
