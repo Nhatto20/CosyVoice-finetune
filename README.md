@@ -49,7 +49,7 @@ Hai tab tương ứng hai chế độ hoạt động.
 
 Hỗ trợ nghe/lưu file .wav.
 
-Hướng dẫn cài đặt:
+### Hướng dẫn cài đặt:
 
 git clone:
 
