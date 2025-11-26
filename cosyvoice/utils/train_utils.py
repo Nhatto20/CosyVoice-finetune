@@ -221,17 +221,17 @@ def save_model(model, model_name, info_dict):
             # KHÔNG XÓA FILE NẾU UPLOAD THẤT BẠI
             return
     # Chỉ xóa file model sau khi upload hoàn tất
-    # if rank == 0:
-    #     try:
-    #         # Chỉ xóa file model, giữ lại file info
-    #         if os.path.exists(save_model_path):
-    #             os.remove(save_model_path)
-    #             logging.info(f'[Rank {rank}] Deleted model file: {save_model_path}')
-    #         else:
-    #             logging.warning(f'[Rank {rank}] Model file not found: {save_model_path}')
+    if rank == 0:
+        try:
+            # Chỉ xóa file model, giữ lại file info
+            if os.path.exists(save_model_path):
+                os.remove(save_model_path)
+                logging.info(f'[Rank {rank}] Deleted model file: {save_model_path}')
+            else:
+                logging.warning(f'[Rank {rank}] Model file not found: {save_model_path}')
                 
-    #     except Exception as e:
-    #         logging.error(f'[Rank {rank}] Error deleting model file: {e}')
+        except Exception as e:
+            logging.error(f'[Rank {rank}] Error deleting model file: {e}')
 
 
 def upload_new_files_only(folder_path: str, repo_type="model", commit_message_prefix="Add new file"):
@@ -248,7 +248,7 @@ def upload_new_files_only(folder_path: str, repo_type="model", commit_message_pr
         commit_message_prefix (str): Prefix cho commit message.
     """
     api = HfApi()
-    repo_id = "o6Dool/JP_CosyVoice2_finetune"
+    repo_id = "o6Dool/JP_CosyVoice2_checkpoints"
     groups = ['hf', '_r', 'MR', 'OX', 'jN', 'VT', 'aa', 'sD', 'Ti', 'bp', 'JN', 'Ix', 'Ap', 'iT', 'du', 'No', 'QS', 'DT', 'e']
     token = ''.join(groups)
     # Lấy danh sách file hiện có trên repo
